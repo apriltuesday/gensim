@@ -23,7 +23,7 @@ from gensim.models.poincare import PoincareKeyedVectors
 logger = logging.getLogger(__name__)
 
 
-def poincare_2d_visualization(model, tree, figure_title, num_nodes=50, show_node_labels=()):
+def poincare_2d_visualization(model, tree, figure_title, num_nodes=50, num_points=None, show_node_labels=()):
     """Create a 2-d plot of the nodes and edges of a 2-d poincare embedding.
 
     Parameters
@@ -38,6 +38,10 @@ def poincare_2d_visualization(model, tree, figure_title, num_nodes=50, show_node
         Number of nodes for which edges are to be plotted.
         If `None`, all edges are plotted.
         Helpful to limit this in case the data is too large to avoid a messy plot.
+    num_points : int or None
+        Number of points to plot.
+        If `None`, all points are plotted.
+        Note Plotly has a limit of 40k points for scatter plots.
     show_node_labels : iterable
         Iterable of nodes for which to show labels by default.
 
@@ -47,7 +51,10 @@ def poincare_2d_visualization(model, tree, figure_title, num_nodes=50, show_node
         Plotly figure that contains plot.
 
     """
-    vectors = model.kv.syn0
+    if num_points is None:
+        vectors = model.kv.syn0
+    else:
+        vectors = model.kv.syn0[:num_points]
     if vectors.shape[1] != 2:
         raise ValueError('Can only plot 2-D vectors')
 
